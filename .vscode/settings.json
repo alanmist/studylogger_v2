@@ -1,0 +1,9 @@
+{
+  "python.defaultInterpreterPath": "/home/alanmist/Projects/studylogger_v2/venv/bin/python3",
+  "python.analysis.extraPaths": [
+    "/usr/lib/python3/dist-packages"
+  ],
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportAttributeAccessIssue": "none"
+  }
+}
