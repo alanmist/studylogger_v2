@@ -32,11 +32,3 @@ class Session:
         total_seconds = (now - self.start_time).total_seconds()
         return int((total_seconds -self.pause_accum_sec)//60)
     
-if __name__ == "__main__":
-    s = Session("Math", "Quadratic equations", 60)
-    print(f"Subject: {s.subject}")
-    print(f"Topic: {s.topic}")
-    print(f"Planned minutes: {s.planned_minutes}")
-    print(f"Start time: {s.start_time}")
-    print(f"Planned end: {s.planned_end}")
-    print(f"Paused: {s.paused}")
