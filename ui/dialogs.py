@@ -128,27 +128,43 @@ class ProblemCaptureDialog(Gtk.Dialog):
         self.solved_text = Gtk.TextView()
         self.solved_text.set_size_request(-1,80)
         box.pack_start(self.solved_text,False,False,0)
-        btn_solved =Gtk.Button(label="📎 Paste image from clipboard")
-        btn_solved.connect("clicked", self.paste_image,"solved")
-        box.pack_start(btn_solved,False,False,0)
+        btn_box_solved = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+        btn_solved = Gtk.Button(label="📎 Paste from clipboard")
+        btn_solved.connect("clicked", self.paste_image, "solved")
+        btn_browse_solved = Gtk.Button(label="📁 Browse file")
+        btn_browse_solved.connect("clicked", self.browse_image, "solved")
+        btn_box_solved.pack_start(btn_solved, True, True, 0)
+        btn_box_solved.pack_start(btn_browse_solved, True, True, 0)
+        box.pack_start(btn_box_solved, False, False, 0)
+        
         
         #Problem attempted
         box.pack_start(Gtk.Label(label="Problems Attempted:"), False, False,0)
         self.attempted_text = Gtk.TextView()
         self.attempted_text.set_size_request(-1,80)
         box.pack_start(self.attempted_text,False,False,0)
-        btn_attempted = Gtk.Button(label="📎 Paste image from clipboard")
-        btn_attempted.connect("clicked",self.paste_image,"attempted")
-        box.pack_start(btn_attempted,False,False,0)
+        btn_box_attempted= Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+        btn_attempted = Gtk.Button(label="📎 Paste from clipboard")
+        btn_attempted.connect("clicked", self.paste_image, "attempted")
+        btn_browse_attempted = Gtk.Button(label="📁 Browse file")
+        btn_browse_attempted.connect("clicked", self.browse_image, "attempted")
+        btn_box_attempted.pack_start(btn_attempted, True, True, 0)
+        btn_box_attempted.pack_start(btn_browse_attempted, True, True, 0)
+        box.pack_start(btn_box_attempted, False, False, 0)
 
         # Couldn't start
         box.pack_start(Gtk.Label(label="Couldn't Start:"), False, False, 0)
         self.couldnt_text = Gtk.TextView()
         self.couldnt_text.set_size_request(-1, 80)
         box.pack_start(self.couldnt_text, False, False, 0)
-        btn_couldnt = Gtk.Button(label="📎 Paste image from clipboard")
+        btn_box_couldnt = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+        btn_couldnt= Gtk.Button(label="📎 Paste from clipboard")
         btn_couldnt.connect("clicked", self.paste_image, "couldnt_start")
-        box.pack_start(btn_couldnt, False, False, 0)
+        btn_browse_couldnt= Gtk.Button(label="📁 Browse file")
+        btn_browse_couldnt.connect("clicked", self.browse_image, "couldnt_start")
+        btn_box_couldnt.pack_start(btn_couldnt, True, True, 0)
+        btn_box_couldnt.pack_start(btn_browse_couldnt, True, True, 0)
+        box.pack_start(btn_box_couldnt, False, False, 0)
 
 
         # Reflection
@@ -187,7 +203,28 @@ class ProblemCaptureDialog(Gtk.Dialog):
             "reflection": self.get_text(self.reflection_text),
             "images":self.images
         }
-    
+    def browse_image(self, button, section):
+        dialog = Gtk.FileChooserDialog(
+            title="Select image",
+            parent=self,
+            action=Gtk.FileChooserAction.OPEN
+        )
+        dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
+        dialog.add_button("Select", Gtk.ResponseType.OK)
+        
+        filter_img = Gtk.FileFilter()
+        filter_img.set_name("Images")
+        filter_img.add_mime_type("image/png")
+        filter_img.add_mime_type("image/jpeg")
+        dialog.add_filter(filter_img)
+        
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            filename = Path(dialog.get_filename())
+            self.images[section].append(filename)
+            zenity_info(f"Image added for {section}!")
+        dialog.destroy()
+
 def ask_problems(subject):
     dialog =ProblemCaptureDialog(subject)
     response = dialog.run()
