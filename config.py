@@ -2,13 +2,20 @@ from pathlib import Path
 
 #-----Path-------------------------
 BASE_DIR = Path(__file__).parent
-LOGS_DIR = BASE_DIR / "logs"
-ASSETS_DIR = BASE_DIR / "assets"
 
-DAILY_DIR = LOGS_DIR / "daily"
-MASTER_LOG = LOGS_DIR / "master_log.md"
-COMPRESSED_DIR = LOGS_DIR / "compressed"
+ASSETS_DIR = BASE_DIR / "assets"
+#OBSIDIAN VAULT PATH--------------------
+VAULT_ROOT =Path("/home/alanmist/Documents/Obsidian/Polymath_Journey/Logs")
+LOGS_DIR = VAULT_ROOT
+DAILY_DIR = VAULT_ROOT / "Daily"
+MASTER_LOG = VAULT_ROOT/ "Master_log.md"
+COMPRESSED_DIR = VAULT_ROOT/ "Compressed"
+
+
 STATE_FILE = Path.home() / ".local/share/studylogger_v2_state.json"
+
+
+
 
 #Subject--------------------------------
 SUBJECTS = ["Math", "Physics", "Coding", "Computer Science", "Proofreading", "other"]
