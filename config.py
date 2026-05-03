@@ -8,7 +8,7 @@ ASSETS_DIR = BASE_DIR / "assets"
 VAULT_ROOT =Path("/home/alanmist/Documents/Obsidian/Polymath_Journey/Logs")
 LOGS_DIR = VAULT_ROOT
 DAILY_DIR = VAULT_ROOT / "Daily"
-MASTER_LOG = VAULT_ROOT/ "Master_log.md"
+MASTER_LOG = VAULT_ROOT/ "Master_Log.md"
 COMPRESSED_DIR = VAULT_ROOT/ "Compressed"
 
 
