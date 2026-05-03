@@ -1,0 +1,25 @@
+
+## Math - 18:23
+**Topic:** just testing
+**Planned:** 120 minutes
+**Status:** In progress
+
+---
+
+**Status:** Not completed
+**Actual study time:** 0 minutes
+**Paused:** 0 minutes
+
+### Problems Solved
+None
+
+### Problems Attempted
+None
+
+### Couldn't Start
+None
+
+### Reflection
+None
+
+---
