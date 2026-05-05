@@ -4,11 +4,13 @@ from config import DAILY_DIR, MASTER_LOG
 
 
 def ensure_dirs():
-    DAILY_DIR.mkdir(parents=True,exist_ok=True)
+    DAILY_DIR.mkdir(parents=True, exist_ok=True)
+
 
 def get_daily_path():
     today = dt.datetime.now().strftime("%Y-%m-%d")
     return DAILY_DIR / f"{today}.md"
+
 
 def write_session_start(session):
     ensure_dirs()
@@ -25,25 +27,46 @@ def write_session_start(session):
         f"---\n"
     )
 
-    with open(daily,"a") as f:
+    with open(daily, "a") as f:
         f.write(header)
-    with open(MASTER_LOG,"a") as f:
+    with open(MASTER_LOG, "a") as f:
         f.write(header)
 
 
-def write_session_end(session, problems_solved, problems_attempted, problems_couldnt_start, reflection, completed):
+def write_session_end(
+    session,
+    problems_solved,
+    problems_attempted,
+    problems_couldnt_start,
+    reflection,
+    completed,
+    images=None,
+):
     daily = get_daily_path()
 
     actual_min = session.actual_study_minutes()
     paused_min = int(round(session.pause_accum_sec / 60))
+    if images is None:
+        images = {"solved": [], "attempted": [], "couldnt_start": []}
+
+    def format_section(text, image_list):
+        parts = []
+        if text:
+            parts.append(text)
+        if image_list:
+            for img_path in image_list:
+                parts.append(f"![[{img_path.name}]]")
+        if not parts:
+            return None
+        return "\n\n".join(parts)
 
     block = (
-         f"\n**Status:** {'Completed' if completed else 'Not completed'}\n"
+        f"\n**Status:** {'Completed' if completed else 'Not completed'}\n"
         f"**Actual study time:** {actual_min} minutes\n"
         f"**Paused:** {paused_min} minutes\n\n"
-        f"### Problems Solved\n{problems_solved or 'None'}\n\n"
-        f"### Problems Attempted\n{problems_attempted or 'None'}\n\n"
-        f"### Couldn't Start\n{problems_couldnt_start or 'None'}\n\n"
+        f"### Problems Solved\n{format_section( problems_solved,images.get("solved",[]))}\n\n"
+        f"### Problems Attempted\n{format_section(problems_attempted,images.get("attempted",[]))}\n\n"
+        f"### Couldn't Start\n{format_section(problems_couldnt_start,images.get("coulndt_start",[]))}\n\n"
         f"### Reflection\n{reflection or 'None'}\n\n"
         f"---\n"
     )
@@ -52,9 +75,3 @@ def write_session_end(session, problems_solved, problems_attempted, problems_cou
         f.write(block)
     with open(MASTER_LOG, "a") as f:
         f.write(block)
-if __name__ == "__main__":
-    from core.session import Session
-    s = Session("Math", "Quadratic equations", 60)
-    write_session_start(s)
-    write_session_end(s, "x² + 5x + 6", "x² - 4", "", "Factoring is clicking", True)
-    print("Log written. Check logs/daily/ folder.")

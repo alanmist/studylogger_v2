@@ -1,28 +1,26 @@
 from pathlib import Path
 
-#-----Path-------------------------
+# -----Path-------------------------
 BASE_DIR = Path(__file__).parent
 
-ASSETS_DIR = BASE_DIR / "assets"
-#OBSIDIAN VAULT PATH--------------------
-VAULT_ROOT =Path("/home/alanmist/Documents/Obsidian/Polymath_Journey/Logs")
+
+# OBSIDIAN VAULT PATH--------------------
+VAULT_ROOT = Path("/home/alanmist/Documents/Obsidian/Polymath_Journey/Logs")
 LOGS_DIR = VAULT_ROOT
+ASSETS_DIR = VAULT_ROOT / "Assets"
 DAILY_DIR = VAULT_ROOT / "Daily"
-MASTER_LOG = VAULT_ROOT/ "Master_Log.md"
-COMPRESSED_DIR = VAULT_ROOT/ "Compressed"
+MASTER_LOG = VAULT_ROOT / "Master_Log.md"
+COMPRESSED_DIR = VAULT_ROOT / "Compressed"
 
 
 STATE_FILE = Path.home() / ".local/share/studylogger_v2_state.json"
 
 
-
-
-#Subject--------------------------------
+# Subject--------------------------------
 SUBJECTS = ["Math", "Physics", "Coding", "Computer Science", "Proofreading", "other"]
 
-#Session Defualts------------------------------
+# Session Defualts------------------------------
 DEFAULT_DURATION_MIN = 120
 
-#Monthly compression---------------------------
+# Monthly compression---------------------------
 COMPRESSION_REMINDER_DAYS = 30
-
