@@ -95,7 +95,7 @@ class TrayApp:
             self.item_pause.set_label("▶ Resume Session")
             self.item_pause.set_sensitive(True)
             self.item_stop.set_sensitive(True)
-            self.ind.set_icon_full(ICON_IDLE, "Paused")
+            self.ind.set_icon_full(ICON_PAUSED, "Paused")
         else:
             left = max(
                 0,
@@ -208,7 +208,6 @@ class TrayApp:
             results.get("couldnt_start", ""),
             results.get("reflection", ""),
             results.get("completed", False),
-            results.get("images", None),
         )
         self.session = None
         self._update_menu()

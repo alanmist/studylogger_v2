@@ -1,17 +1,14 @@
 import subprocess
-from pathlib import Path
-import datetime as dt
-from config import SUBJECTS, ASSETS_DIR
-import os
+
+
+from config import SUBJECTS
+
 import gi
 
 gi.require_version("Gtk", "3.0")
-gi.require_version("Gdk", "3.0")
-gi.require_version("GdkPixbuf", "2.0")
+
 
 from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GdkPixbuf
 
 
 # Base zenity helpers----------------
@@ -122,7 +119,6 @@ class ProblemCaptureDialog(Gtk.Dialog):
     def __init__(self, subject):
         super().__init__(title=f"Session End -{subject}")
         self.set_default_size(500, 600)
-        self.images = {"solved": [], "attempted": [], "couldnt_start": []}
 
         box = self.get_content_area()
         box.set_spacing(10)
@@ -144,14 +140,6 @@ class ProblemCaptureDialog(Gtk.Dialog):
         solved_scroll.set_size_request(-1, 80)
         solved_scroll.add(self.solved_text)
         box.pack_start(solved_scroll, False, False, 0)
-        btn_box_solved = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
-        btn_solved = Gtk.Button(label="📎 Paste from clipboard")
-        btn_solved.connect("clicked", self.paste_image, "solved")
-        btn_browse_solved = Gtk.Button(label="📁 Browse file")
-        btn_browse_solved.connect("clicked", self.browse_image, "solved")
-        btn_box_solved.pack_start(btn_solved, True, True, 0)
-        btn_box_solved.pack_start(btn_browse_solved, True, True, 0)
-        box.pack_start(btn_box_solved, False, False, 0)
 
         # Problem attempted
         box.pack_start(Gtk.Label(label="Problems Attempted:"), False, False, 0)
@@ -162,14 +150,6 @@ class ProblemCaptureDialog(Gtk.Dialog):
         attempted_scroll.set_size_request(-1, 80)
         attempted_scroll.add(self.attempted_text)
         box.pack_start(attempted_scroll, False, False, 0)
-        btn_box_attempted = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
-        btn_attempted = Gtk.Button(label="📎 Paste from clipboard")
-        btn_attempted.connect("clicked", self.paste_image, "attempted")
-        btn_browse_attempted = Gtk.Button(label="📁 Browse file")
-        btn_browse_attempted.connect("clicked", self.browse_image, "attempted")
-        btn_box_attempted.pack_start(btn_attempted, True, True, 0)
-        btn_box_attempted.pack_start(btn_browse_attempted, True, True, 0)
-        box.pack_start(btn_box_attempted, False, False, 0)
 
         # Couldn't start
         box.pack_start(Gtk.Label(label="Couldn't Start:"), False, False, 0)
@@ -180,14 +160,6 @@ class ProblemCaptureDialog(Gtk.Dialog):
         couldnt_scroll.set_size_request(-1, 80)
         couldnt_scroll.add(self.couldnt_text)
         box.pack_start(couldnt_scroll, False, False, 0)
-        btn_box_couldnt = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
-        btn_couldnt = Gtk.Button(label="📎 Paste from clipboard")
-        btn_couldnt.connect("clicked", self.paste_image, "couldnt_start")
-        btn_browse_couldnt = Gtk.Button(label="📁 Browse file")
-        btn_browse_couldnt.connect("clicked", self.browse_image, "couldnt_start")
-        btn_box_couldnt.pack_start(btn_couldnt, True, True, 0)
-        btn_box_couldnt.pack_start(btn_browse_couldnt, True, True, 0)
-        box.pack_start(btn_box_couldnt, False, False, 0)
 
         # Reflection
         box.pack_start(Gtk.Label(label="Reflection / thoughts:"), False, False, 0)
@@ -204,19 +176,6 @@ class ProblemCaptureDialog(Gtk.Dialog):
         self.add_button("Save session", Gtk.ResponseType.OK)
         self.show_all()
 
-    def paste_image(self, button, section):
-        clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
-        pixbuf = clipboard.wait_for_image()
-        if pixbuf is None:
-            zenity_info("No image in clipboard. Take a screenshot first.")
-            return
-        ASSETS_DIR.mkdir(parents=True, exist_ok=True)
-        timestamp = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = ASSETS_DIR / f"{timestamp}_{section}.png"
-        pixbuf.savev(str(filename), "png", [], [])
-        self.images[section].append(filename)
-        zenity_info(f"Image saved for {section}!")
-
     def get_text(self, textview):
         buf = textview.get_buffer()
         return buf.get_text(buf.get_start_iter(), buf.get_end_iter(), True).strip()
@@ -228,28 +187,7 @@ class ProblemCaptureDialog(Gtk.Dialog):
             "attempted": self.get_text(self.attempted_text),
             "couldnt_start": self.get_text(self.couldnt_text),
             "reflection": self.get_text(self.reflection_text),
-            "images": self.images,
         }
-
-    def browse_image(self, button, section):
-        dialog = Gtk.FileChooserDialog(
-            title="Select image", parent=self, action=Gtk.FileChooserAction.OPEN
-        )
-        dialog.add_button("Cancel", Gtk.ResponseType.CANCEL)
-        dialog.add_button("Select", Gtk.ResponseType.OK)
-
-        filter_img = Gtk.FileFilter()
-        filter_img.set_name("Images")
-        filter_img.add_mime_type("image/png")
-        filter_img.add_mime_type("image/jpeg")
-        dialog.add_filter(filter_img)
-
-        response = dialog.run()
-        if response == Gtk.ResponseType.OK:
-            filename = Path(dialog.get_filename())
-            self.images[section].append(filename)
-            zenity_info(f"Image added for {section}!")
-        dialog.destroy()
 
 
 def ask_problems(subject):
