@@ -4,6 +4,7 @@ gi.require_version("Gtk", "3.0")
 gi.require_version("AyatanaAppIndicator3", "0.1")
 from gi.repository import Gtk, GLib
 from gi.repository import AyatanaAppIndicator3 as AppIndicator
+import re
 
 from config import DAILY_DIR
 import datetime as dt
@@ -161,6 +162,7 @@ class TrayApp:
         self._end_session()
 
     def on_stats(self, *_):
+
         today = dt.datetime.now().strftime("%Y-%m-%d")
         daily_file = DAILY_DIR / f"{today}.md"
 
@@ -173,16 +175,16 @@ class TrayApp:
 
         try:
             with open(daily_file, "r") as f:
-                for line in f:
-                    if "Actual study time:" in line:
-                        parts = line.split(":")
-                        if len(parts) > 1:
-                            mins = parts[1].strip().split()[0]
-                            if mins.isdigit():
-                                total += int(mins)
-                                sessions += 1
-        except Exception:
-            pass
+                content = f.read()
+                matches = re.findall(
+                    r"\*\*Actual study time:\*\*\s*(\d+)\s*minutes", content
+                )
+                for m in matches:
+                    total += int(m)
+                    sessions += 1
+        except Exception as e:
+            zenity_info(f"Error reading log: {e}")
+            return
 
         hours = total // 60
         minutes = total % 60
