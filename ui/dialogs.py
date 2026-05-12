@@ -112,6 +112,27 @@ def ask_topic(subject):
     return zenity_entry(f"What exactly are you studying in {subject}?", "")
 
 
+def ask_completed():
+    return zenity_question("Did you complete your study goal?")
+
+
+def ask_extend_minutes():
+    if not zenity_question("Do you want to extend the session?"):
+        return None
+
+    result = zenity_entry("How many more minutes?", "30")
+    if result is None:
+        return None
+    if not result.isdigit():
+        zenity_info("Please enter a number")
+        return None
+    value = int(result)
+    if value <= 0:
+        zenity_info("Minutes must be more than 0")
+        return None
+    return value
+
+
 # Gtk Problem capture dialog-----------
 
 
