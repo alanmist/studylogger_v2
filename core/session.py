@@ -12,6 +12,7 @@ class Session:
         self.paused_at = None
         self.pause_accum_sec = 0
         self.remaining_at_pause_min = None
+        self.completed = None
 
     def pause(self):
         if self.paused:
@@ -36,3 +37,11 @@ class Session:
         now = dt.datetime.now().astimezone()
         total_seconds = (now - self.start_time).total_seconds()
         return int((total_seconds - self.pause_accum_sec) // 60)
+
+    def extend(self, extra_min):
+        # Assumes timer has already expired (now >= planned_end).
+        # Do not call before planned_end — session length will shrink.
+        self.planned_end = dt.datetime.now().astimezone() + dt.timedelta(
+            minutes=extra_min
+        )
+        self.planned_minutes += extra_min
