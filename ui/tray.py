@@ -18,6 +18,8 @@ from ui.dialogs import (
     ask_problems,
     zenity_info,
     zenity_question,
+    ask_completed,
+    ask_extend_minutes,
 )
 
 from config import MASTER_LOG
@@ -40,7 +42,7 @@ class TrayApp:
 
         self._build_menu()
         self._check_compression()
-        GLib.timeout_add_seconds(30, self._tick)
+        GLib.timeout_add_seconds(5, self._tick)
 
     def _build_menu(self):
         self.menu = Gtk.Menu()
@@ -197,6 +199,26 @@ class TrayApp:
     def _end_session(self):
         if self.session is None:
             return
+        completed = ask_completed()
+        if completed is True:
+            self.session.completed = True
+        else:
+            extended = ask_extend_minutes()
+            if extended is None:
+                self.session.completed = False
+            else:
+                do_extend = True
+                if self.session.would_exceed_cap(extended):
+                    if not zenity_question(
+                        "You've passed the 3-hour cap on this session. You have other study waiting - are you sure you want to extend?"
+                    ):
+                        do_extend = False
+                if do_extend:
+                    self.session.extend(extended)
+                    return
+                else:
+                    self.session.completed = False
+
         subject = self.session.subject
         results = ask_problems(subject)
         if results is None:
@@ -207,7 +229,7 @@ class TrayApp:
             results.get("attempted", ""),
             results.get("couldnt_start", ""),
             results.get("reflection", ""),
-            results.get("completed", False),
+            self.session.completed,
         )
         self.session = None
         self._update_menu()

@@ -45,3 +45,6 @@ class Session:
             minutes=extra_min
         )
         self.planned_minutes += extra_min
+
+    def would_exceed_cap(self, extra_min, cap_min=180):
+        return self.actual_study_minutes() + extra_min >= cap_min
