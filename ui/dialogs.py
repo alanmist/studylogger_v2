@@ -148,10 +148,6 @@ class ProblemCaptureDialog(Gtk.Dialog):
         box.set_margin_start(10)
         box.set_margin_end(10)
 
-        # completed?
-        self.completed_check = Gtk.CheckButton(label="I Completed my goal")
-        box.pack_start(self.completed_check, False, False, 0)
-
         # problems Solved
         box.pack_start(Gtk.Label(label="problems Solved:"), False, False, 0)
         self.solved_text = Gtk.TextView()
@@ -203,7 +199,6 @@ class ProblemCaptureDialog(Gtk.Dialog):
 
     def get_results(self):
         return {
-            "completed": self.completed_check.get_active(),
             "solved": self.get_text(self.solved_text),
             "attempted": self.get_text(self.attempted_text),
             "couldnt_start": self.get_text(self.couldnt_text),
