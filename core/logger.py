@@ -34,10 +34,12 @@ def write_session_start(session):
 
 def write_session_end(
     session,
-    problems_solved,
-    problems_attempted,
-    problems_couldnt_start,
-    reflection,
+    work_on,
+    got_right,
+    slip_where,
+    dont_understand,
+    next_session,
+    cause,
     completed,
 ):
     daily = get_daily_path()
@@ -49,10 +51,11 @@ def write_session_end(
         f"\n**Status:** {'Completed' if completed else 'Not completed'}\n"
         f"**Actual study time:** {actual_min} minutes\n"
         f"**Paused:** {paused_min} minutes\n\n"
-        f"### Problems Solved\n{problems_solved or 'None'}\n\n"
-        f"### Problems Attempted\n{problems_attempted or 'None'}\n\n"
-        f"### Couldn't Start\n{problems_couldnt_start or 'None'}\n\n"
-        f"### Reflection\n{reflection or 'None'}\n\n"
+        f"### What I worked on\n{work_on or 'None'}\n\n"
+        f"### What I  got_right\n{got_right or 'None'}\n\n"
+        f"### Where I slipped\n**Cause:** {cause or 'None'}\n{slip_where or 'None'}\n\n"
+        f"### One thing I don't understand\n{dont_understand or 'None'}\n\n"
+        f"### Next session - first 10 minutes\n{next_session or 'None'}\n\n"
         f"---\n"
     )
 

@@ -32,7 +32,6 @@ ICON_PAUSED = "media-playback-pause"
 class TrayApp:
     def __init__(self):
         self.session = None
-
         self.ind = AppIndicator.Indicator.new(
             "studylogger-v2",
             ICON_IDLE,
@@ -199,6 +198,9 @@ class TrayApp:
     def _end_session(self):
         if self.session is None:
             return
+        self.session.planned_end = dt.datetime.now().astimezone() + dt.timedelta(
+            hours=24
+        )
         completed = ask_completed()
         if completed is True:
             self.session.completed = True
@@ -222,13 +224,16 @@ class TrayApp:
         subject = self.session.subject
         results = ask_problems(subject)
         if results is None:
+            self.session.planned_end = dt.datetime.now().astimezone()
             return
         write_session_end(
             self.session,
-            results.get("solved", ""),
-            results.get("attempted", ""),
-            results.get("couldnt_start", ""),
-            results.get("reflection", ""),
+            results.get("work_on", ""),
+            results.get("get_right", ""),
+            results.get("slip_where", ""),
+            results.get("dont_understand", ""),
+            results.get("next_session", ""),
+            results.get("cause", ""),
             self.session.completed,
         )
         self.session = None

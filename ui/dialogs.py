@@ -10,6 +10,38 @@ gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gtk
 
+SLIP_CAUSES = {
+    "Math": [
+        "Concept gap",
+        "Arithmetic slip",
+        "Misread the problem",
+        "Rushed",
+        "Focus broke",
+    ],
+    "Physics": [
+        "Concept gap",
+        "Arithmetic slip",
+        "Misread the problem",
+        "Rushed",
+        "Focus broke",
+    ],
+    "Coding": [
+        "Concept gap",
+        "Syntax error",
+        "Didn't understand the API",
+        "Debugging took too long",
+        "Scope creep",
+        "Focus broke",
+    ],
+    "Proofs": [
+        "Concept gap",
+        "Logic error",
+        "Misread the problem",
+        "Rushed",
+        "Focus broke",
+    ],
+}
+
 
 # Base zenity helpers----------------
 def zenity_list(prompt, options):
@@ -138,7 +170,7 @@ def ask_extend_minutes():
 
 class ProblemCaptureDialog(Gtk.Dialog):
     def __init__(self, subject):
-        super().__init__(title=f"Session End -{subject}")
+        super().__init__(title=f"Session Log -{subject}")
         self.set_default_size(500, 600)
 
         box = self.get_content_area()
@@ -148,45 +180,70 @@ class ProblemCaptureDialog(Gtk.Dialog):
         box.set_margin_start(10)
         box.set_margin_end(10)
 
-        # problems Solved
-        box.pack_start(Gtk.Label(label="problems Solved:"), False, False, 0)
-        self.solved_text = Gtk.TextView()
-        self.solved_text.set_wrap_mode(Gtk.WrapMode.WORD)
-        solved_scroll = Gtk.ScrolledWindow()
-        solved_scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        solved_scroll.set_size_request(-1, 80)
-        solved_scroll.add(self.solved_text)
-        box.pack_start(solved_scroll, False, False, 0)
+        # What did you work on
+        box.pack_start(Gtk.Label(label="What did you work on:"), False, False, 0)
+        self.work_on = Gtk.TextView()
+        self.work_on.set_wrap_mode(Gtk.WrapMode.WORD)
+        work_on_scroll = Gtk.ScrolledWindow()
+        work_on_scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        work_on_scroll.set_size_request(-1, 80)
+        work_on_scroll.add(self.work_on)
+        box.pack_start(work_on_scroll, False, False, 0)
 
-        # Problem attempted
-        box.pack_start(Gtk.Label(label="Problems Attempted:"), False, False, 0)
-        self.attempted_text = Gtk.TextView()
-        self.attempted_text.set_wrap_mode(Gtk.WrapMode.WORD)
-        attempted_scroll = Gtk.ScrolledWindow()
-        attempted_scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        attempted_scroll.set_size_request(-1, 80)
-        attempted_scroll.add(self.attempted_text)
-        box.pack_start(attempted_scroll, False, False, 0)
+        # What did you get right
+        box.pack_start(Gtk.Label(label="What did you get right:"), False, False, 0)
+        self.get_right = Gtk.TextView()
+        self.get_right.set_wrap_mode(Gtk.WrapMode.WORD)
+        get_right_scroll = Gtk.ScrolledWindow()
+        get_right_scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        get_right_scroll.set_size_request(-1, 80)
+        get_right_scroll.add(self.get_right)
+        box.pack_start(get_right_scroll, False, False, 0)
 
-        # Couldn't start
-        box.pack_start(Gtk.Label(label="Couldn't Start:"), False, False, 0)
-        self.couldnt_text = Gtk.TextView()
-        self.couldnt_text.set_wrap_mode(Gtk.WrapMode.WORD)
-        couldnt_scroll = Gtk.ScrolledWindow()
-        couldnt_scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        couldnt_scroll.set_size_request(-1, 80)
-        couldnt_scroll.add(self.couldnt_text)
-        box.pack_start(couldnt_scroll, False, False, 0)
+        # Where did you slip + Category
+        self.cause_combo = Gtk.ComboBoxText()
+        causes = SLIP_CAUSES.get(subject, SLIP_CAUSES["Math"])
+        for cause in causes:
+            self.cause_combo.append_text(cause)
+        self.cause_combo.set_active(0)
+        box.pack_start(Gtk.Label(label="Where did you slip :"), False, False, 0)
+        box.pack_start(Gtk.Label(label="Cause:"), False, False, 0)
+        box.pack_start(self.cause_combo, False, False, 0)
+        self.slip_wehere = Gtk.TextView()
+        self.slip_wehere.set_wrap_mode(Gtk.WrapMode.WORD)
+        slip_wehere_scroll = Gtk.ScrolledWindow()
+        slip_wehere_scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC
+        )
+        slip_wehere_scroll.set_size_request(-1, 80)
+        slip_wehere_scroll.add(self.slip_wehere)
+        box.pack_start(slip_wehere_scroll, False, False, 0)
 
-        # Reflection
-        box.pack_start(Gtk.Label(label="Reflection / thoughts:"), False, False, 0)
-        self.reflection_text = Gtk.TextView()
-        self.reflection_text.set_wrap_mode(Gtk.WrapMode.WORD)
-        reflection_scroll = Gtk.ScrolledWindow()
-        reflection_scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
-        reflection_scroll.set_size_request(-1, 80)
-        reflection_scroll.add(self.reflection_text)
-        box.pack_start(reflection_scroll, False, False, 0)
+        # one thing you don't understand
+        box.pack_start(
+            Gtk.Label(label="One thing you don't understand:"), False, False, 0
+        )
+        self.dont_understand = Gtk.TextView()
+        self.dont_understand.set_wrap_mode(Gtk.WrapMode.WORD)
+        dont_understand_scroll = Gtk.ScrolledWindow()
+        dont_understand_scroll.set_policy(
+            Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC
+        )
+        dont_understand_scroll.set_size_request(-1, 80)
+        dont_understand_scroll.add(self.dont_understand)
+        box.pack_start(dont_understand_scroll, False, False, 0)
+
+        # Frist 10 minuts next session/Tought
+        box.pack_start(
+            Gtk.Label(label="Frist 10 minuts next session/Tought:"), False, False, 0
+        )
+        self.tought = Gtk.TextView()
+        self.tought.set_wrap_mode(Gtk.WrapMode.WORD)
+        tought_scroll = Gtk.ScrolledWindow()
+        tought_scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        tought_scroll.set_size_request(-1, 80)
+        tought_scroll.add(self.tought)
+        box.pack_start(tought_scroll, False, False, 0)
 
         # Buttons
         self.add_button("Cancel", Gtk.ResponseType.CANCEL)
@@ -199,10 +256,12 @@ class ProblemCaptureDialog(Gtk.Dialog):
 
     def get_results(self):
         return {
-            "solved": self.get_text(self.solved_text),
-            "attempted": self.get_text(self.attempted_text),
-            "couldnt_start": self.get_text(self.couldnt_text),
-            "reflection": self.get_text(self.reflection_text),
+            "work_on": self.get_text(self.work_on),
+            "get_right": self.get_text(self.get_right),
+            "slip_where": self.get_text(self.slip_wehere),
+            "dont_understand": self.get_text(self.dont_understand),
+            "next_session": self.get_text(self.tought),
+            "cause": self.cause_combo.get_active_text(),
         }
 
 
