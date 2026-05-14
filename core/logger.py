@@ -52,7 +52,7 @@ def write_session_end(
         f"**Actual study time:** {actual_min} minutes\n"
         f"**Paused:** {paused_min} minutes\n\n"
         f"### What I worked on\n{work_on or 'None'}\n\n"
-        f"### What I  got_right\n{got_right or 'None'}\n\n"
+        f"### What I  got right\n{got_right or 'None'}\n\n"
         f"### Where I slipped\n**Cause:** {cause or 'None'}\n{slip_where or 'None'}\n\n"
         f"### One thing I don't understand\n{dont_understand or 'None'}\n\n"
         f"### Next session - first 10 minutes\n{next_session or 'None'}\n\n"
