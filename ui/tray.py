@@ -41,7 +41,7 @@ class TrayApp:
 
         self._build_menu()
         self._check_compression()
-        GLib.timeout_add_seconds(5, self._tick)
+        GLib.timeout_add_seconds(1, self._tick)
 
     def _build_menu(self):
         self.menu = Gtk.Menu()
@@ -98,16 +98,19 @@ class TrayApp:
             self.item_stop.set_sensitive(True)
             self.ind.set_icon_full(ICON_PAUSED, "Paused")
         else:
-            left = max(
+            total_sec = max(
                 0,
                 int(
                     (
                         self.session.planned_end - dt.datetime.now().astimezone()
                     ).total_seconds()
-                    // 60
                 ),
             )
-            self.item_status.set_label(f"▶ {self.session.subject}: {left}m left")
+            mins = total_sec // 60
+            secs = total_sec % 60
+            self.item_status.set_label(
+                f"▶ {self.session.subject}: {mins}m {secs:02d}s left"
+            )
             self.item_start.set_sensitive(False)
             self.item_pause.set_label("⏸ Pause Session")
             self.item_pause.set_sensitive(True)
