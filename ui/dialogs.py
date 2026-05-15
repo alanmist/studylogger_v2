@@ -235,7 +235,7 @@ class ProblemCaptureDialog(Gtk.Dialog):
 
         # Frist 10 minuts next session/Tought
         box.pack_start(
-            Gtk.Label(label="Frist 10 minuts next session/Tought:"), False, False, 0
+            Gtk.Label(label="First 10 minuts next session/Thought:"), False, False, 0
         )
         self.tought = Gtk.TextView()
         self.tought.set_wrap_mode(Gtk.WrapMode.WORD)
