@@ -11,12 +11,25 @@ def get_daily_path():
     return DAILY_DIR / f"{today}.md"
 
 
+def _ensure_master_log_date_heading():
+    today = dt.datetime.now().strftime("%Y-%m-%d")
+    heading = f"# {today}"
+    if MASTER_LOG.exists():
+        text = MASTER_LOG.read_text()
+        if heading in text.splitlines():
+            return
+    with open(MASTER_LOG, "a") as f:
+        f.write(f"\n{heading}\n")
+
+
 def write_session_start(session):
     ensure_dirs()
     daily = get_daily_path()
 
     if not daily.exists():
         daily.write_text(f"# {dt.datetime.now().strftime('%Y-%m-%d')}\n\n")
+
+    _ensure_master_log_date_heading()
 
     header = (
         f"\n## {session.subject} - {session.start_time.strftime('%H:%M')}\n"
