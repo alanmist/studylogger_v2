@@ -126,11 +126,15 @@ class TrayApp:
 
     def _check_compression(self):
         if is_compression_due():
-            zenity_info(
+            done = zenity_question(
                 "⚠️ Monthly compression is due!\n"
-                "Please send your master log to Claude\n"
-                "and compress before starting a new session."
+                "Please send your Master_Log.md to Claude and compress it.\n\n"
+                "Have you already done this?",
+                ok="Yes, done",
+                cancel="Remind me later",
             )
+            if done:
+                save_compression_date()
 
     def on_start(self, *_):
         subject = ask_subject()
